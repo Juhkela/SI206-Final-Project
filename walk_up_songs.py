@@ -14,6 +14,16 @@ def setUpDatabase(db_name):
 	cur = conn.cursor()
 	return cur, conn
 
+def setUpWalkUpTable(data, cur, conn):
+	"""Creates walk-up table"""
+	cur.execute("DROP TABLE IF EXISTS Walkup")
+	cur.execute("CREATE TABLE Walkup (name TEXT PRIMARY KEY, team TEXT, code TEXT, song TEXT, url TEXT, id TEXT, artist TEXT)")
+	for player in data:
+		cur.execute("""INSERT INTO Walkup (name, team, code, song, url, id, artist) 
+		VALUES (?, ?, ?, ?, ?, ?, ?)""", (player, data[player]['team'], data[player]['team_code'], data[player]['song'], data[player]['spotify_url'], data[player]['track_id'], data[player]['artist']))
+	conn.commit()
+
+
 
 def get_team_codes():
 	""" Returns a list of MLB team abbreviations from MLB Entertainment website"""
@@ -163,7 +173,10 @@ if __name__ == '__main__':
 
 	#create database to store walk up song data
 	cur, conn = setUpDatabase("walkup.db")
+	setUpWalkUpTable(test_dict, cur, conn)
 
 	#create PrettyPrinter object for better visual of how dictionary is organized
-	pp = pprint.PrettyPrinter(indent=4)
-	pp.pprint(test_dict)
+	#pp = pprint.PrettyPrinter(indent=4)
+	#pp.pprint(test_dict)
+
+	conn.close()
