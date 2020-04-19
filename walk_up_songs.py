@@ -3,6 +3,17 @@ import requests
 import re
 import json
 import pprint
+import sqlite3
+import os
+
+
+def setUpDatabase(db_name):
+	""" Creates database and returns cur and conn"""
+	path = os.path.dirname(os.path.abspath(__file__))
+	conn = sqlite3.connect(path + '/' + db_name)
+	cur = conn.cursor()
+	return cur, conn
+
 
 def get_team_codes():
 	""" Returns a list of MLB team abbreviations from MLB Entertainment website"""
@@ -149,6 +160,9 @@ if __name__ == '__main__':
 
 	#create a dictionary to hold all walk up song data
 	test_dict = get_all_walkup_data()
+
+	#create database to store walk up song data
+	cur, conn = setUpDatabase("walkup.db")
 
 	#create PrettyPrinter object for better visual of how dictionary is organized
 	pp = pprint.PrettyPrinter(indent=4)
