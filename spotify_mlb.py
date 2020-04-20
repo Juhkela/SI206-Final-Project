@@ -11,8 +11,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from json.decoder import JSONDecodeError
 
 # def setUpDatabase(db_name):
-# 	""" Creates database and returns cur and conn """     - CURRENTLY NOT IN USE. PLANNING TO ADD A TABLE TO walkup.db
-	
+# """ Creates database and returns cur and conn """  ---- > CURRENTLY NOT IN USE. PLANNING TO ADD DB IN LATER
 # 	path = os.path.dirname(os.path.abspath(__file__))
 # 	conn = sqlite3.connect(path + '/' + db_name)
 # 	cur = conn.cursor()
@@ -48,11 +47,13 @@ def fillPlaylist(user_id, playlist_id, cur, conn):
 
     sp = spotipy.Spotify(auth = token)
 
-    # sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, one) # Prevents readding the
-    # sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, two) 
-    # sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, three) 
-    # sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, four) 
-    # sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, five) 
+    sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, one) # Prevents adding two of the same song
+    sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, two) 
+    sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, three) 
+    sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, four) 
+    sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, five) 
+
+
     sp.user_playlist_add_tracks(user_id, playlist_id, one) # Adds in tracks.
     sp.user_playlist_add_tracks(user_id, playlist_id, two) 
     sp.user_playlist_add_tracks(user_id, playlist_id, three) 
