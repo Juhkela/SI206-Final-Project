@@ -9,6 +9,7 @@ import os
 
 def setUpDatabase(db_name):
 	""" Creates database and returns cur and conn"""
+	
 	path = os.path.dirname(os.path.abspath(__file__))
 	conn = sqlite3.connect(path + '/' + db_name)
 	cur = conn.cursor()
@@ -16,6 +17,7 @@ def setUpDatabase(db_name):
 
 def setUpWalkUpTable(data, cur, conn):
 	"""Creates walk-up table"""
+
 	cur.execute("DROP TABLE IF EXISTS Walkup")
 	cur.execute("CREATE TABLE Walkup (name TEXT PRIMARY KEY, team TEXT, code TEXT, song TEXT, url TEXT, id TEXT, artist TEXT)")
 	for player in data:
