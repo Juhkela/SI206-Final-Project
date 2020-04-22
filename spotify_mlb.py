@@ -9,13 +9,19 @@ import webbrowser
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 from json.decoder import JSONDecodeError
+os.environ['SPOTIPY_CLIENT_ID'] = 'af0da31f178949c58f60415516fb1faa'
+os.environ['SPOTIPY_CLIENT_SECRET'] = '7803f391738242ebaf499fcd5ac26645'
+os.environ['SPOTIPY_REDIRECT_URI'] = 'https://google.com/'
+
+
 
 # Grabbing Auth Token:
 # Client ID:     af0da31f178949c58f60415516fb1faa
 # Client Secret: 7803f391738242ebaf499fcd5ac26645
 # GET https://accounts.spotify.com/authorize?client_id=af0da31f178949c58f60415516fb1faa&response_type=code&redirect_uri=https%3A%2F%2Fgoogle.com%2F&scope=playlist-read-private
 # RUN CURL BELOW IN CMD
-# curl -H "Authorization: Basic YWYwZGEzMWYxNzg5NDljNThmNjA0MTU1MTZmYjFmYWE6NzgwM2YzOTE3MzgyNDJlYmFmNDk5ZmNkNWFjMjY2NDU=" -d grant_type=authorization_code -d code=AQDBQlAxPI4Ga97pk8YUqtic1z74AEiTfShjw-0-2__Z7N0apEXypq7MriH2SzvYoeKJuIdfr0SPdIBLKnDLT3dFby3-jNNSZDW5-W98UaAIWrM8Fxiti7Xs5OpfmHtK_sgpmeBPGRMOE3mIY295FKF5v_41BM9Lmdh5gC2ISSqSA7cVXnae4MYpO2AKuCQKZPBSrlhVn6Bkyv-s3VCxYw -d redirect_uri=https%3A%2F%2Fgoogle.com%2F https://accounts.spotify.com/api/token
+# curl -H "Authorization: Basic YWYwZGEzMWYxNzg5NDljNThmNjA0MTU1MTZmYjFmYWE6NzgwM2YzOTE3MzgyNDJlYmFmNDk5ZmNkNWFjMjY2NDU=" -d grant_type=authorization_code -d code=AQAv7cmKBhZlwSjgqr7uJrdvW-lpU_VXpTS5wQ8UD5mfp_S-j0Y1pQo5hJE13s3porPMvyY5pbEHEIUC4Zgc9F5aTYWi1APS9znn4jimDov5CC0g59pX20CohqWuQhtr3y26VaI9zZbip6Ip7ZU0PIBJbAPabI078d6rNbe4jFSlOC64iWsDqENikmtsEq6ofDPB8cuFvdtnq0DCCzFf4Q -d redirect_uri=https%3A%2F%2Fgoogle.com%2F https://accounts.spotify.com/api/token
+
 
 def fillPlaylist(user_id, playlist_id, cur, conn):
 
@@ -25,8 +31,7 @@ def fillPlaylist(user_id, playlist_id, cur, conn):
     # token = util.prompt_for_user_token(username, scope)
 
     # Access token expires every hour: Grab a new one here --> https://developer.spotify.com/console/post-playlist-tracks/ 
-    token = 'BQDMm68XomWdY68OcawVzQ2CKiz64uT0kgVv44It8EBoKvmNhcXvoB382JOn9VrWiC1O4K8ZULte-mzNFmDOxTeasvicWtscxd5X8c4PokbZO_DUGLuTHr-ARF_YEgjIsRg-UWMdquOVa4C3ezBZCdHzNEOkMrXLpVGakjOplxvyiRc2MqJ_ZrTAaXWMB7qx8T5AlF_Dgq_guE1eZMqJSfg0dpzt'
-    increment = 0
+    # token = 'BQC3E7TlyCS5bqOMw2qHhgm-1KuazC4tVhUBXpoIy75TbcAL4orKV3Y_hfXFrV_g1yZ6W-RTkB6hEh6MocHcjMhWN0V6QiXyG7fScBLaVyMEiM4d_6SYjnFIfDISl1M0l1W_d1Bth6lMEpLLdoN0DZ64g5zN2BYR2sfjXuV8qBCBuxzk0sv0-tX5bqJtTT1awoJvkX-W1cQ28IopXqUXnNbL7vxXH53x7_Vk1XAIRFQy6ZK07F-N-Zsgv9FtX2ChksK49-xdOWxpA4b3gEw-SGIgMQvuAQ'
     track_ids = []
     cur.execute('SELECT DISTINCT id FROM Walkup') # Grabs Spotify Song ID's from the Walkup table
     tuple_id = cur.fetchall()
@@ -34,26 +39,25 @@ def fillPlaylist(user_id, playlist_id, cur, conn):
     for i in range(len(tuple_id)):
         track_ids.append(tuple_id[i][0])
     
-    # split_list_tracks = chunks(track_ids, 100)
+    split_list_tracks = chunks(track_ids, 100)
 
-    # if token:
-    #     sp = spotipy.Spotify(auth = token)
-    #     sp.trace = False
+    # client_credentials_manager = SpotifyClientCredentials()
+    # sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-    #     for i in split_list_tracks:
-    #         increment += 1
-    #         # sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, i)
-    #         # sp.user_playlist_add_tracks(user_id, playlist_id, i)
+    # sp = spotipy.Spotify(auth = token)
+    # sp.trace = False
 
-    # else:
-    #     print("The token has expired")
+    # for i in split_list_tracks:
+    #     sp.user_playlist_remove_all_occurrences_of_tracks(user_id, playlist_id, i)
+    #     sp.user_playlist_add_tracks(user_id, playlist_id, i)
 
     return track_ids
     
 
 def grabTrackData(track_ids):
-    token = 'BQBrk7NnHsguCY2NsVuy8KUjm46cNfA6KXJ-YOcwFw5BFhPGi7q_bdT2VdJNLz9bs0_4guBvUtL_cK8l24OypEatHrEPkL3f9JYrI95rv2ATJxkXLSA8S1t0e0Ag0gp5GrazqKwgYMNFSme10zZl2hvoZ8aOiI3WfID7tPe9lPFRc2s'
-    sp = spotipy.Spotify(auth=token)
+
+    client_credentials_manager = SpotifyClientCredentials()
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     split_list = chunks(track_ids, 50)
     track_data = []
     for i in split_list:
@@ -67,10 +71,12 @@ def chunks(lst, n):
     
 
 def setUpSpotifyTable(data, cur, conn):
-    cur.execute("DROP TABLE IF EXISTS Spotify")
+
     cur.execute('''CREATE TABLE IF NOT EXISTS Spotify (song_id TEXT PRIMARY KEY, name TEXT, popularity INTEGER, 
                    duration_ms INTEGER, explicit BOOL, track_info TEXT)''')
-    for i in data:
+    cur.execute('SELECT COUNT(*) FROM Spotify')
+    total_rows = cur.fetchone()[0]
+    for i in data[total_rows:total_rows+20]:
         cur.execute('''INSERT INTO Spotify (song_id, name, popularity, duration_ms, explicit, track_info)
                        VALUES (?, ?, ?, ?, ?, ?)''', 
                        (i['id'], i['name'], i['popularity'], i['duration_ms'], i['explicit'], i['external_urls']['spotify']))
@@ -78,6 +84,10 @@ def setUpSpotifyTable(data, cur, conn):
     conn.commit()
 
 def main():
+
+    # username = sys.argv[1]
+    # token = util.prompt_for_user_token(username)
+
     playlist_id = '3ExuKCBDeMaelDsAiMKz97'
     user_id = 'a75zp3fq9fm0y8cyb4eki5yb7'
     conn = sqlite3.connect('walkup.db')
@@ -86,6 +96,8 @@ def main():
     # print(track_ids)
 
     track_data = grabTrackData(track_ids)
+    # pp = pprint.PrettyPrinter(depth=6)
+    # pp.pprint(track_data)
     setUpSpotifyTable(track_data, cur, conn)
     
 
