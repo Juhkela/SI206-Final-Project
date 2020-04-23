@@ -19,10 +19,12 @@ def setUpWalkUpTable(data, cur, conn):
 	"""Creates walk-up table"""
 
 	cur.execute("DROP TABLE IF EXISTS Walkup")
-	cur.execute("CREATE TABLE Walkup (name TEXT PRIMARY KEY, team TEXT, code TEXT, song TEXT, url TEXT, id TEXT, artist TEXT)")
+	cur.execute("CREATE TABLE Walkup (name TEXT PRIMARY KEY, team TEXT, code TEXT, song TEXT, url TEXT, id TEXT, artist TEXT, row INTEGER)")
+	count = 1
 	for player in data:
-		cur.execute("""INSERT INTO Walkup (name, team, code, song, url, id, artist) 
-		VALUES (?, ?, ?, ?, ?, ?, ?)""", (player, data[player]['team'], data[player]['team_code'], data[player]['song'], data[player]['spotify_url'], data[player]['track_id'], data[player]['artist']))
+		cur.execute("""INSERT INTO Walkup (name, team, code, song, url, id, artist, row) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (player, data[player]['team'], data[player]['team_code'], data[player]['song'], data[player]['spotify_url'], data[player]['track_id'], data[player]['artist'], count))
+		count = count + 1
 	conn.commit()
 
 
