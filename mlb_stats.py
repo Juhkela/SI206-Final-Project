@@ -49,15 +49,20 @@ def createPlayerDict(player_id):
 def setUpStatsTable(cur, conn):
     """ Iterates through walkup song table and creates new table with each row as various stats for each player"""
 
-    cur.execute("DROP TABLE IF EXISTS Stats")
-    cur.execute("CREATE TABLE Stats (name TEXT PRIMARY KEY,  avg TEXT, ops TEXT, strikeouts TEXT, homeruns TEXT, rbi TEXT)")
-    cur.execute("SELECT * FROM Walkup")
+    cur.execute("CREATE TABLE IF NOT EXISTS Stats (name TEXT PRIMARY KEY, avg TEXT, ops TEXT, strikeouts TEXT, homeruns TEXT, rbi TEXT, row INTEGER)")
+    cur.execute("SELECT row FROM Stats ORDER BY row DESC LIMIT 1")
+    try:
+        row = cur.fetchone()[0] #row of most recent entry
+    except:
+        row = 0
+    cur.execute("SELECT * FROM Walkup WHERE row > {} AND row < {}".format(row+1, row+21))
     players = cur.fetchall()
     
     count = 0
     for player in players:
         name = player[0]
-        print(name)
+        row = player[-1]
+        #print(name)
         if type(name) != str:
             continue
         id = getPlayerID(name)
@@ -68,14 +73,13 @@ def setUpStatsTable(cur, conn):
             continue #skip if something goes wrong with api
 
         stats = results['sport_hitting_tm']['queryResults']['row']
-        cur.execute("""INSERT INTO Stats (name, avg, ops, strikeouts, homeruns, rbi) VALUES (?, ?, ?, ?, ?, ?)
-        """, (name, stats['avg'], stats['ops'], stats['so'], stats['hr'], stats['rbi']))
+        cur.execute("""INSERT INTO Stats (name, avg, ops, strikeouts, homeruns, rbi, row) VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (name, stats['avg'], stats['ops'], stats['so'], stats['hr'], stats['rbi'], row))
         count = count + 1
         conn.commit()
 
-        if count % 5 == 0:
-            print('Pausing for a bit...')
-            time.sleep(5)
+        if count == 20:
+            break
     
     
 
@@ -90,19 +94,19 @@ if __name__ == '__main__':
     cur, conn = setUpDatabase('walkup.db') 
     setUpStatsTable(cur, conn)
    
-    name = None
-    if type(name) != str:
-        print("PLAYER NOT FOUND")
-    id = getPlayerID(name)
-    if id == 0:
-        print("pitcher") #skip pitchers
-    results = createPlayerDict(id)
-    if len(results) == 0 or results['sport_hitting_tm']['queryResults']['totalSize'] == '0':
-        print("PLAYER NOT FOUND") #skip when api doesn't work for whatever reason
+    # name = None
+    # if type(name) != str:
+    #     print("PLAYER NOT FOUND")
+    # id = getPlayerID(name)
+    # if id == 0:
+    #     print("pitcher") #skip pitchers
+    # results = createPlayerDict(id)
+    # if len(results) == 0 or results['sport_hitting_tm']['queryResults']['totalSize'] == '0':
+    #     print("PLAYER NOT FOUND") #skip when api doesn't work for whatever reason
 
-    stats = results['sport_hitting_tm']['queryResults']['row']
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(results)
+    # stats = results['sport_hitting_tm']['queryResults']['row']
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(results)
     conn.close()
     
 
