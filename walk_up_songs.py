@@ -18,17 +18,42 @@ def setUpDatabase(db_name):
 def setUpWalkUpTable(data, cur, conn):
 	"""Creates walk-up table"""
 
-	cur.execute("DROP TABLE IF EXISTS Walkup")
-	cur.execute("CREATE TABLE Walkup (name TEXT PRIMARY KEY, team TEXT, code TEXT, song TEXT, url TEXT, id TEXT, artist TEXT, row INTEGER)")
+	# cur.execute("DROP TABLE IF EXISTS Walkup")
+	cur.execute("CREATE TABLE IF NOT EXISTS Walkup (name TEXT PRIMARY KEY, team TEXT, code TEXT, song TEXT, url TEXT, id TEXT, artist TEXT, row INTEGER)")
 	count = 1
+	database = ""
+	cur.execute('SELECT COUNT(*) FROM Walkup')
+	row = cur.fetchone()[0]
+	row_trace = row + 1
 	for player in data:
-		cur.execute("""INSERT INTO Walkup (name, team, code, song, url, id, artist, row) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (player, data[player]['team'], data[player]['team_code'], data[player]['song'], data[player]['spotify_url'], data[player]['track_id'], data[player]['artist'], count))
-		count = count + 1
+		if row >= 20:
+			for i in range(1, row + 1):
+				cur.execute('SELECT name FROM Walkup WHERE row = ?', (i, ))
+				database = cur.fetchone()[0]
+				if player in database:
+					break
+			else:
+				cur.execute("""INSERT INTO Walkup (name, team, code, song, url, id, artist, row) 
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (player, data[player]['team'], data[player]['team_code'], data[player]['song'], data[player]['spotify_url'], data[player]['track_id'], data[player]['artist'], row_trace))
+				count = count + 1
+				row_trace = row_trace + 1
+				if count > 20:
+					break
+
+		else:
+			cur.execute("""INSERT INTO Walkup (name, team, code, song, url, id, artist, row) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (player, data[player]['team'], data[player]['team_code'], data[player]['song'], data[player]['spotify_url'], data[player]['track_id'], data[player]['artist'], row_trace))
+			count = count + 1
+			row_trace = row_trace + 1
+			if count > 20:
+				break
+
+		continue
+
+
+	
 	conn.commit()
-
-
-
+	
 def get_team_codes():
 	""" Returns a list of MLB team abbreviations from MLB Entertainment website"""
 
@@ -86,7 +111,6 @@ def isolate_name(text):
 
 
 
-
 def get_walkup_songs(team_code):
 	"""Returns a dictionary of players and corresponsing information from passed-in team code.
 	Any MLB player who has not provided a walk-up song will be omitted from the dictionary.
@@ -133,7 +157,7 @@ def get_walkup_songs(team_code):
 			track_id = None
 
 		#If player does not have a song on spotify, then do not add them
-		if spotify_url != None:
+		if spotify_url != None and name != None:
 
 			#If player is not in dictionary already, add information
 			if name not in players:
