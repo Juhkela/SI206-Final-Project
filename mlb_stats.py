@@ -61,7 +61,7 @@ def setUpStatsTable(cur, conn):
     if len(players) == 0:
         print("No more rows can be added")
     
-    count = 0
+    
     for player in players:
         name = player[0]
         row = player[-1]
@@ -78,11 +78,10 @@ def setUpStatsTable(cur, conn):
         stats = results['sport_hitting_tm']['queryResults']['row']
         cur.execute("""INSERT INTO Stats (name, avg, ops, strikeouts, homeruns, rbi, row) VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (name, stats['avg'], stats['ops'], stats['so'], stats['hr'], stats['rbi'], row))
-        count = count + 1
+        
         conn.commit()
 
-        if count == 20:
-            break
+        
     
     
 
