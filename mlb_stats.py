@@ -55,8 +55,11 @@ def setUpStatsTable(cur, conn):
         row = cur.fetchone()[0] #row of most recent entry
     except:
         row = 0
+
     cur.execute("SELECT * FROM Walkup WHERE row > {} AND row < {}".format(row+1, row+21))
     players = cur.fetchall()
+    if len(players) == 0:
+        print("No more rows can be added")
     
     count = 0
     for player in players:
