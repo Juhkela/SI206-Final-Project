@@ -25,13 +25,6 @@ os.environ['SPOTIPY_REDIRECT_URI'] = 'https://google.com/'
 
 def grabTrackIds(user_id, playlist_id, cur, conn):
 
-    # username = sys.argv[1] # The username is 'SI206Project'
-
-    # scope = 'playlist-modify-public'
-    # token = util.prompt_for_user_token(username, scope)
-
-    # Access token expires every hour: Grab a new one here --> https://developer.spotify.com/console/post-playlist-tracks/ 
-    # token = 'BQC3E7TlyCS5bqOMw2qHhgm-1KuazC4tVhUBXpoIy75TbcAL4orKV3Y_hfXFrV_g1yZ6W-RTkB6hEh6MocHcjMhWN0V6QiXyG7fScBLaVyMEiM4d_6SYjnFIfDISl1M0l1W_d1Bth6lMEpLLdoN0DZ64g5zN2BYR2sfjXuV8qBCBuxzk0sv0-tX5bqJtTT1awoJvkX-W1cQ28IopXqUXnNbL7vxXH53x7_Vk1XAIRFQy6ZK07F-N-Zsgv9FtX2ChksK49-xdOWxpA4b3gEw-SGIgMQvuAQ'
     track_ids = []
     cur.execute('SELECT DISTINCT id FROM Walkup') # Grabs Spotify Song ID's from the Walkup table
     tuple_id = cur.fetchall()
@@ -39,10 +32,7 @@ def grabTrackIds(user_id, playlist_id, cur, conn):
     for i in range(len(tuple_id)):
         track_ids.append(tuple_id[i][0])
     
-    split_list_tracks = chunks(track_ids, 100)
-
-    # client_credentials_manager = SpotifyClientCredentials()
-    # sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    # split_list_tracks = chunks(track_ids, 100)
 
     # sp = spotipy.Spotify(auth = token)
     # sp.trace = False
@@ -87,16 +77,11 @@ def setUpSpotifyTable(data, cur, conn):
 
 def main():
 
-    # username = sys.argv[1]
-    # token = util.prompt_for_user_token(username)
-
     playlist_id = '3ExuKCBDeMaelDsAiMKz97'
     user_id = 'a75zp3fq9fm0y8cyb4eki5yb7'
     conn = sqlite3.connect('walkup.db')
     cur = conn.cursor()
-    track_ids = grabTrackIds(user_id, playlist_id, cur, conn) # ---> Playlist filled. No need to run again.
-    # print(track_ids)
-
+    track_ids = grabTrackIds(user_id, playlist_id, cur, conn)
     track_data = grabTrackData(track_ids)
     # pp = pprint.PrettyPrinter(depth=6)
     # pp.pprint(track_data)
@@ -105,9 +90,6 @@ def main():
 
     conn.close()
     
-
-
-
 if __name__ == "__main__":
     main()
 
