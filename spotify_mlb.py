@@ -32,6 +32,9 @@ def grabTrackIds(user_id, playlist_id, cur, conn):
     for i in range(len(tuple_id)):
         track_ids.append(tuple_id[i][0])
     
+    # Access token expires every hour: Grab a new one here --> https://developer.spotify.com/console/post-playlist-tracks/ 
+    # token = 'BQC3E7TlyCS5bqOMw2qHhgm-1KuazC4tVhUBXpoIy75TbcAL4orKV3Y_hfXFrV_g1yZ6W-RTkB6hEh6MocHcjMhWN0V6QiXyG7fScBLaVyMEiM4d_6SYjnFIfDISl1M0l1W_d1Bth6lMEpLLdoN0DZ64g5zN2BYR2sfjXuV8qBCBuxzk0sv0-tX5bqJtTT1awoJvkX-W1cQ28IopXqUXnNbL7vxXH53x7_Vk1XAIRFQy6ZK07F-N-Zsgv9FtX2ChksK49-xdOWxpA4b3gEw-SGIgMQvuAQ'
+
     # split_list_tracks = chunks(track_ids, 100)
 
     # sp = spotipy.Spotify(auth = token)
